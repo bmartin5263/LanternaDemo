@@ -16,47 +16,37 @@ public class App {
     Terminal terminal = defaultTerminalFactory.createTerminal();
     TerminalScreen screen = new TerminalScreen(terminal);
 
-    screen.startScreen();
-    screen.setCursorPosition(null);
-    TextGraphics gfx = screen.newTextGraphics();
-    TerminalSize terminalSize = screen.getTerminalSize();
+    Graphics gfx = Graphics.instance();
+    gfx.initialize(terminal, screen);
 
-    System.out.println(terminalSize);
+    InputManager input = InputManager.instance();
+    input.initialize(screen);
 
-    boolean running = true;
-    int row = 0;
-    int col = 0;
-    while (running) {
-      var input = screen.pollInput();
-      if (input != null) {
-        var keyType = input.getKeyType();
-        if (keyType == KeyType.ArrowUp && row > 0) {
-          row -= 1;
-        }
-        else if (keyType == KeyType.ArrowDown && row < terminalSize.getRows() - 1) {
-          row += 1;
-        }
-        else if (keyType == KeyType.ArrowLeft && col > 0) {
-          col -= 1;
-        }
-        else if (keyType == KeyType.ArrowRight && col < terminalSize.getColumns() - 1) {
-          col += 1;
-        }
-        else if (keyType == KeyType.Escape) {
-          running = false;
-        }
-      }
+    GameObjectManager goManager = GameObjectManager.instance();
+    goManager.initialize();
 
-      screen.clear();
-      gfx.setCharacter(col, row, 'Λ');
-      screen.refresh();
+    goManager.spawn(new Ship());
 
-      System.out.printf("row=%s, col=%s\n", row, col);
+    while (goManager.isRunning()) {
+      // Clear whatever the last frame had
+      gfx.clear();
+
+      // Polls the screen for the next input and saves it for the rest of the frame
+      input.update();
+
+      // Update game objects
+      goManager.runSpawns();
+      goManager.updateAll();
+      goManager.runDestroys();
+
+
+      goManager.drawAll();
+      gfx.refresh();
       Thread.sleep(10);
     }
 
-    screen.stopScreen();
-    screen.close();
-    terminal.close();
+    goManager.terminate();
+    input.terminate();
+    gfx.terminate();
   }
 }
