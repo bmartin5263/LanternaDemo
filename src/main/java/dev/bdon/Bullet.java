@@ -17,7 +17,10 @@ public class Bullet extends GameObject {
 
   public Bullet(Position position) {
     super(position);
+  }
 
+  @Override
+  public void onSpawn() {
     // Implement Runnable
     handle = Timer.instance().setInterval(1000, new BlowUp(this));        // named class
     handle = Timer.instance().setInterval(1000, new Runnable() {                // anonymous class

@@ -29,6 +29,9 @@ public class Timer {
   }
 
   public void cancel(int id) {
+    if (id == 0) {
+      return;
+    }
     events.removeIf(e -> e.getId() == id);
   }
 

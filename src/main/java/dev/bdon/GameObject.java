@@ -12,6 +12,8 @@ public abstract class GameObject {
 
   public abstract void update();
   public abstract void draw(Graphics gfx);
+
+  public abstract void onSpawn();
   public abstract void onDestroy();
 
 }

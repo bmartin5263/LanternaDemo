@@ -5,6 +5,9 @@ import java.util.List;
 
 public class GameObjectManager {
   private final static GameObjectManager instance = new GameObjectManager();
+  public static GameObjectManager instance() {
+    return instance;
+  }
 
   private boolean running;
   private List<GameObject> spawnObjects = new ArrayList<>();
@@ -24,11 +27,17 @@ public class GameObjectManager {
   }
 
   public void runSpawns() {
+    for (var obj : spawnObjects) {
+      obj.onSpawn();
+    }
     liveObjects.addAll(spawnObjects);
     spawnObjects.clear();
   }
 
   public void runDestroys() {
+    for (var obj : destroyObjects) {
+      obj.onDestroy();
+    }
     liveObjects.removeAll(destroyObjects);
     destroyObjects.clear();
   }
@@ -51,9 +60,5 @@ public class GameObjectManager {
 
   public void terminate() {
 
-  }
-
-  public static GameObjectManager instance() {
-    return instance;
   }
 }
